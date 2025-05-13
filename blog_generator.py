@@ -1,4 +1,4 @@
-from litellmchatter import completion
+from litellm import completion
 import os
 from datetime import datetime
 from tools import slugify_title, github_commit
