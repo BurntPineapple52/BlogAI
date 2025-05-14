@@ -32,7 +32,7 @@ def generate_blog_post(topic, style_guide=None, notes=None):
         messages.append({"role": "system", "content": f"Incorporate these notes: {notes}"})
 
     response = completion(
-        model="gemini/gemini-2.0-flash",
+        model="gemini/gemini-2.5-flash",
         messages=messages
     )
     return response.choices[0].message.content
