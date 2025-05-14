@@ -8,40 +8,49 @@ from pathlib import Path
 import threading
 import time
 import sys
+import random
 from colorama import init, Fore, Style
 
-class ColorAnimator:
-    """Handles colorful loading animations with multiple styles"""
-    COLOR_SCHEMES = {
-        'ocean': [Fore.CYAN, Fore.BLUE, Fore.MAGENTA],
-        'fire': [Fore.RED, Fore.YELLOW, Fore.MAGENTA],
-        'forest': [Fore.GREEN, Fore.YELLOW, Fore.CYAN],
-        'rainbow': [Fore.RED, Fore.YELLOW, Fore.GREEN, 
-                   Fore.CYAN, Fore.BLUE, Fore.MAGENTA]
-    }
-    
-    def __init__(self, message="Processing", style='ocean'):
-        self.message = f"[ {message} ]"
-        self.colors = self.COLOR_SCHEMES.get(style, self.COLOR_SCHEMES['ocean'])
+class TextGlitchAnimator:
+    """Handles text glitch animations"""
+    def __init__(self, message="Processing"):
+        self.message = message
         self.stop_event = threading.Event()
         self.thread = None
-        self.current_frame = 0
+        self.glitch_chars = ['#', '$', '%', '&', '*', '@', '!', '?', '~', '/', '\\', '|', '_', '+', '-']
+        self.colors = [
+            Fore.RED, Fore.GREEN, Fore.YELLOW, Fore.BLUE, 
+            Fore.MAGENTA, Fore.CYAN, Fore.WHITE,
+            Fore.LIGHTRED_EX, Fore.LIGHTGREEN_EX, Fore.LIGHTYELLOW_EX,
+            Fore.LIGHTBLUE_EX, Fore.LIGHTMAGENTA_EX, Fore.LIGHTCYAN_EX, Fore.LIGHTWHITE_EX
+        ]
         
     def _animate(self):
         """Internal animation loop"""
-        while not self.stop_event.is_set():
-            colored_text = []
-            for i, char in enumerate(self.message):
-                color_idx = (i + self.current_frame) % len(self.colors)
-                colored_text.append(f"{self.colors[color_idx]}{char}")
-            
-            sys.stdout.write('\r' + ''.join(colored_text) + Style.RESET_ALL)
-            sys.stdout.flush()
-            time.sleep(0.08)
-            self.current_frame += 1
+        original_text = list(self.message)
+        text_len = len(original_text)
         
-        sys.stdout.write('\r' + ' ' * len(self.message) + '\r')
-        sys.stdout.flush()
+        try:
+            while not self.stop_event.is_set():
+                display_text_list = list(original_text)
+                num_glitches = random.randint(1, max(1, text_len // 3)) 
+
+                for _ in range(num_glitches):
+                    idx_to_glitch = random.randint(0, text_len - 1)
+                    if original_text[idx_to_glitch] != ' ': 
+                        chosen_color = random.choice(self.colors)
+                        if random.random() < 0.6: 
+                            display_text_list[idx_to_glitch] = f"{chosen_color}{random.choice(self.glitch_chars)}{Style.RESET_ALL}"
+                        else:
+                            display_text_list[idx_to_glitch] = f"{chosen_color}{original_text[idx_to_glitch]}{Style.RESET_ALL}"
+                
+                output = "\r" + "".join(display_text_list) + "..."
+                sys.stdout.write(output.ljust(text_len + 25))
+                sys.stdout.flush()
+                time.sleep(0.05)
+        finally:
+            sys.stdout.write("\r" + " " * (text_len + 25) + "\r")
+            sys.stdout.flush()
     
     def start(self):
         """Begin the animation in a background thread"""
@@ -79,7 +88,7 @@ def generate_blog_post(topic, style_guide=None, notes=None):
     if notes:
         messages.append({"role": "system", "content": f"Incorporate these notes: {notes}"})
 
-    animator = ColorAnimator("Generating Blog Post", style='rainbow')
+    animator = TextGlitchAnimator("Generating Blog Post")
     animator.start()
 
     try:
@@ -122,7 +131,7 @@ def main():
             return
         
         # Revise based on feedback
-        animator = ColorAnimator("Revising Content", style='fire')
+        animator = TextGlitchAnimator("Revising Content")
         animator.start()
         try:
             draft = generate_blog_post(
