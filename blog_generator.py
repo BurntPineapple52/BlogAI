@@ -80,7 +80,7 @@ def get_current_date():
 def generate_blog_post(topic, style_guide=None, notes=None, current_draft=None):
     """Generates or revises a blog post draft using LLM."""
     messages = [
-        {"role": "system", "content": "You are a professional blog writer."},
+        {"role": "system", "content": "You clean up notes and turn them into a blog post. You don't remove content, but you fill in any context holes and fix narrative flow."},
     ]
 
     if current_draft:
@@ -88,13 +88,13 @@ def generate_blog_post(topic, style_guide=None, notes=None, current_draft=None):
          messages.append({"role": "user", "content": f"Revise this blog post based on feedback: {topic}\n\n{current_draft}"})
     else:
         # This is an initial generation request
-        messages.append({"role": "user", "content": f"Write a comprehensive blog post about: {topic}"})
+        messages.append({"role": "user", "content": f"Write a Jekyll markdown post about the following: {topic}"})
 
 
     if style_guide:
         messages.append({"role": "system", "content": f"Follow this style guide: {style_guide}"})
     if notes:
-        messages.append({"role": "system", "content": f"Incorporate these notes: {notes}"})
+        messages.append({"role": "system", "content": f"Incorporate these notes and tone: {notes}"})
 
     animator = TextGlitchAnimator("Generating Blog Post" if not current_draft else "Revising Content")
     animator.start()
