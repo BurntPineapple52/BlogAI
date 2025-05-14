@@ -84,7 +84,7 @@ def generate_blog_post(topic, style_guide=None, notes=None):
 
     try:
         response = completion(
-            model="gemini/gemini-2.5-flash",
+            model="gemini/gemini-2.5-flash-preview-04-17",
             messages=messages
         )
         return response.choices[0].message.content

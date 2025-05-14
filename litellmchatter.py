@@ -19,7 +19,7 @@ try:
         messages.append({"role": "user", "content": user_input})  # Append user message
 
         response = completion(
-            model="gemini/gemini-2.0-flash",
+            model="gemini/gemini-2.5-flash",
             messages=messages  # Pass the entire message history
         )
 
